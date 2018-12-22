@@ -3,6 +3,15 @@ const createRandomString = require('../utils/stringGenerator');
 
 module.exports = function cacheService() {
   /**
+   * Validates the record to be created
+   * @param {Object} doc The incoming body parameter
+   * @returns {Boolean}
+   */
+  function validateDocument(doc) {
+    return (doc.key && doc.data);
+  }
+
+  /**
    * @author Ishtiaque
    * @desc creates/updates the data for a given key
    * @param {Object} document Cache document.
@@ -11,27 +20,34 @@ module.exports = function cacheService() {
    */
   function createOrUpdate(document) {
     const promise = new Promise((resolve, reject) => {
-      const conditions = {
-        key: document.key,
-      };
-      const updateData = {
-        data: document.data,
-        createdAt: Date.now(),
-      };
-      const options = {
-        // Return the document after updates are applied
-        new: true,
-        // Create a document if one isn't found
-        upsert: true,
-        setDefaultsOnInsert: true,
-      };
-      Cache.findOneAndUpdate(conditions, updateData, options, (err, doc) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(doc.data);
-        }
-      });
+      if (!validateDocument(document)) {
+        reject({
+          error: 'ValidationError',
+          message: 'Invalid data found. Please pass data in the correct format',
+        });
+      } else {
+        const conditions = {
+          key: document.key,
+        };
+        const updateData = {
+          data: document.data,
+          createdAt: Date.now(),
+        };
+        const options = {
+          // Return the document after updates are applied
+          new: true,
+          // Create a document if one isn't found
+          upsert: true,
+          setDefaultsOnInsert: true,
+        };
+        Cache.findOneAndUpdate(conditions, updateData, options, (err, doc) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(doc.data);
+          }
+        });
+      }
     });
     return promise;
   }

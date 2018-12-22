@@ -40,6 +40,17 @@ Create a .env file in the root folder. Inside this file, the following variables
 * DB_HOST    : hostname of the server where the DB is located.
 * DB_PORT    : port of the DB service.
 
+```bash
+# Sample .nv file
+STAGE=development
+PORT=3000
+DB_NAME=mydb
+DB_USER=myuser
+DB_PASS=mypassword
+DB_HOST=localhost
+DB_PORT=27017
+```
+
 ### Linting ###
 
 This project uses ESLint and Airbnb JS style-guide to help write standard and clean code.

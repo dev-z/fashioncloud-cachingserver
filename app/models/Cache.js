@@ -18,8 +18,10 @@ module.exports = (function createCacheSchema() {
     data: Schema.Types.Mixed,
     createdAt: {
       type: Date,
-      expires: '5s', // Expire record after 1 hour
-      default: Date.now(),
+      // Every cached item has a Time To Live(TTL).If the TTL is exceeded, the cached data will
+      // not be used. Here, we expire record after 1 hour
+      expires: '60s',
+      default: Date.now,
     },
   });
   /**
