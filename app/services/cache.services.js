@@ -101,6 +101,7 @@ module.exports = function cacheService() {
           };
           Cache.create(recordToCreate).then((createdRecord) => {
             resolve({
+              // A new record was created, hence we send HTTP status code 201 instead of 200
               statusCode: 201,
               data: createdRecord.data,
             });

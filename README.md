@@ -63,7 +63,9 @@ To use linting, please ensure that you have dev-dependencies installed for this 
 
 Uses Mocha adn ChaiJS to run automated tests. You can use the results to integrate with CI/CD tools.
 Run the command "npm test" to run the tests.
-* Please note that running the tests clears the database, so DON'T RUN THE TESTS WHEN CONNECTED TO YOUR PRODUCTION DATABASE.
+* NOTE: Running the tests clears the database, so DON'T RUN THE TESTS WHEN CONNECTED TO YOUR PRODUCTION DATABASE.
+* Use conventions like dbname_dev, dbname_test to use different databases in different stages to prevent accidents.
+* Please be sure to update your .env file with the appropiate values in the DB_NAME field.
 
 ### Contribution guidelines ###
 * TODO

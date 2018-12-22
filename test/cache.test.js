@@ -16,14 +16,11 @@ describe('Cache Tests', function () {
   before(function (done) {
     // A little delay so the DB connection is established and startServer() is called.
     setTimeout(function () {
-      // Create global variable for storing some temp data.
-      global.tests = {};
       // Clear User model
-      Cache.remove({}, function (err) {
+      Cache.deleteMany({}, function (err) {
         if (err) {
           console.error('Error in clearing Cache collection before the tests.', err);
         }
-        console.info('Cache cleared');
       });
       done();
     }, 5000);
@@ -36,10 +33,8 @@ describe('Cache Tests', function () {
 
   // runs after all tests in this block
   after(function (done) {
-    // --- Clear global variables --- //
-    global.tests = undefined;
     // --- Clear all Collections --- //
-    Cache.remove({}, function (err) {
+    Cache.deleteMany({}, function (err) {
       if (err) {
         console.error('Error in clearing Cache collection after tests.', err);
       }
@@ -64,11 +59,6 @@ describe('Cache Tests', function () {
             res.should.have.status(200);
             res.body.should.be.a('string');
             res.body.should.be.equal('TEST_DATA_1');
-            // Store these details for later tests.
-            global.tests.record1 = {
-              key: 'testkey1',
-              data: 'TEST_DATA_1'
-            };
             done();
           }
         });
@@ -132,6 +122,119 @@ describe('Cache Tests', function () {
           res.body.should.have.property('error')
             .that.is.equal('ValidationError');
           done();
+        });
+    });
+  });
+
+  // --- GET /cache ----------------------------------------------------------------- //
+  describe('GET /cache', function () {
+    it('it should return all the keys stored in the cache', function (done) {
+      chai.request(server)
+        .get('/api/v1/cache')
+        .end(function (err, res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(200);
+            // Since we created 1 record in the previous test;
+            res.body.should.be.a('array').that.has.lengthOf(1);
+            done();
+          }
+        });
+    });
+  });
+
+  // --- GET /cache/:key ----------------------------------------------------------------- //
+  describe('GET /cache/:key', function () {
+    it('it should return the cached data for a given key', function (done) {
+      chai.request(server)
+        .get('/api/v1/cache/someRandomKey')
+        .end(function (err, res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(201);
+            res.body.should.be.a('string');
+            done();
+          }
+        });
+    });
+    it('it should verify that a new record was created as the previous given key was not found', function (done) {
+      chai.request(server)
+        .get('/api/v1/cache')
+        .end(function (err, res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(200);
+            // Since we created 1 more record in the previous test;
+            res.body.should.be.a('array').that.has.lengthOf(2);
+            done();
+          }
+        });
+    });
+  });
+
+  // --- DELETE /cache/:key ----------------------------------------------------------------- //
+  describe('DELETE /cache/:key', function () {
+    it('it should remove a given key from the cache', function (done) {
+      chai.request(server)
+        .delete('/api/v1/cache/someRandomKey')
+        .end(function (err, res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message');
+            done();
+          }
+        });
+    });
+    it('it should verify that the key was deleted', function (done) {
+      chai.request(server)
+        .get('/api/v1/cache')
+        .end(function (err, res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(200);
+            // Since we deleted 1 record in the previous test.
+            res.body.should.be.a('array').that.has.lengthOf(1);
+            done();
+          }
+        });
+    });
+  });
+
+  // --- DELETE /cache ----------------------------------------------------------------- //
+  describe('DELETE /cache', function () {
+    it('it should remove all keys from the cache', function (done) {
+      chai.request(server)
+        .delete('/api/v1/cache')
+        .end(function (err, res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message');
+            done();
+          }
+        });
+    });
+    it('it should verify that all the keys were deleted', function (done) {
+      chai.request(server)
+        .get('/api/v1/cache')
+        .end(function (err, res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(200);
+            // Since we deleted all keys in the previous test
+            res.body.should.be.a('array').that.has.lengthOf(0);
+            done();
+          }
         });
     });
   });
