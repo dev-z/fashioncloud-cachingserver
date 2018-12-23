@@ -1,9 +1,9 @@
 {
-  "name": "express-jwt-mongo-boilerplate",
+  "name": "fashioncloud-cachingserver",
   "version": "0.0.1",
   "description": "API server",
   "main": "server.js",
-  "repository": "https://github.com/dev-z/Express-JWT-MongoDB-Mocha-boilerplate.git",
+  "repository": "https://github.com/dev-z/fashioncloud-cachingserver.git",
   "author": "<ishtiaque.zafar92@gmail.com>",
   "license": "MIT",
   "dependencies": {
